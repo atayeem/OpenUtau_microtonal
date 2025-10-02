@@ -70,7 +70,7 @@ namespace OpenUtau.Core.Format
                         }
                         else {
                             var pitch = note.Pitch.Step.ToString() + note.Pitch.Octave.ToString();
-                            int tone = MusicMath.NameToTone(pitch) + (int)note.Pitch.Alter;
+                            int tone = MusicMath.NameToTone(pitch, 12) + (int)note.Pitch.Alter;
                             UNote unote = uproject.CreateNote(tone, currPosTick, durTick);
                             if (note.Lyric.Count > 0) {
                                 unote.lyric = note.Lyric[0].Text[0].Value;

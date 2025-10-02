@@ -36,6 +36,18 @@ namespace OpenUtau.App.Controls {
                 o => o.Key,
                 (o, v) => o.Key = v);
 
+        public static readonly DirectProperty<TrackBackground, int> EqualTemperamentProperty =
+            AvaloniaProperty.RegisterDirect<TrackBackground, int>(
+                nameof(EqualTemperament),
+                o => o.EqualTemperament,
+                (o, v) => o.EqualTemperament = v);
+
+        public static readonly DirectProperty<TrackBackground, int> MaxToneProperty =
+            AvaloniaProperty.RegisterDirect<TrackBackground, int>(
+                nameof(MaxTone),
+                o => o.MaxTone,
+                (o, v) => o.MaxTone = v);
+
         public double TrackHeight {
             get => _trackHeight;
             private set => SetAndRaise(TrackHeightProperty, ref _trackHeight, value);
@@ -56,12 +68,22 @@ namespace OpenUtau.App.Controls {
             get => _key;
             set => SetAndRaise(KeyProperty, ref _key, value);
         }
+        public int EqualTemperament {
+            get => _equalTemperament;
+            set => SetAndRaise(EqualTemperamentProperty, ref _equalTemperament, value);
+        }
+        public int MaxTone {
+            get => _maxTone;
+            set => SetAndRaise(MaxToneProperty, ref _maxTone, value);
+        }
 
         private double _trackHeight;
         private double _trackOffset;
         private bool _isPianoRoll;
         private bool _isKeyboard;
         private int _key;
+        private int _equalTemperament = 12;
+        private int _maxTone = 12 * 11;
 
         public TrackBackground() {
             MessageBus.Current.Listen<ThemeChangedEvent>()
@@ -114,8 +136,8 @@ namespace OpenUtau.App.Controls {
                     brush = isCenterKey ? ThemeManager.CenterKeyNameBrush
                         : isAltTrack ? ThemeManager.BlackKeyNameBrush
                             : ThemeManager.WhiteKeyNameBrush;
-                    int tone = ViewConstants.MaxTone - 1 - track;
-                    string toneName = MusicMath.GetToneName(tone);
+                    int tone = MaxTone - 1 - track;
+                    string toneName = MusicMath.GetToneName(tone, EqualTemperament);
                     var toneTextLayout = TextLayoutCache.Get(toneName, brush, 12);
                     var toneTextPosition = new Point(Bounds.Width - 4 - (int)toneTextLayout.Width, (int)(top + (TrackHeight - toneTextLayout.Height) / 2));
                     using (var state = context.PushTransform(Matrix.CreateTranslation(toneTextPosition))) {
@@ -139,16 +161,16 @@ namespace OpenUtau.App.Controls {
             if (!IsPianoRoll) {
                 return track % 2 == 1;
             }
-            int tone = ViewConstants.MaxTone - 1 - track;
+            int tone = MaxTone - 1 - track;
             if (tone < 0) {
                 return false;
             }
-            return MusicMath.IsBlackKey(tone);
+            return MusicMath.IsBlackKey(tone, EqualTemperament);
         }
 
         private bool IsCenterKey(int track) {
-            int tone = ViewConstants.MaxTone - 1 - track;
-            return MusicMath.IsCenterKey(tone);
+            int tone = MaxTone - 1 - track;
+            return MusicMath.IsCenterKey(tone, EqualTemperament);
         }
     }
 }

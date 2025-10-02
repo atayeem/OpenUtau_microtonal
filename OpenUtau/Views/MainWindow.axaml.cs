@@ -517,6 +517,14 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMenuProjectSettings(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            var dialog = new ProjectSettingsDialog() {
+                DataContext = new ProjectSettingsViewModel(project),
+            };
+            dialog.ShowDialog(this);
+        }
+
         void OnMenuSingers(object sender, RoutedEventArgs args) {
             OpenSingersWindow();
         }

@@ -35,7 +35,8 @@ namespace OpenUtau.App.ViewModels {
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
         [Reactive] public Rect Bounds { get; set; }
         public int TickCount => Part?.Duration ?? 480 * 4;
-        public int TrackCount => ViewConstants.MaxTone;
+        public int MaxTone => 11 * EqualTemperament;
+        public int TrackCount => MaxTone;
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.NoteHeightMin;
         public double TrackHeightMax => ViewConstants.NoteHeightMax;
@@ -92,6 +93,7 @@ namespace OpenUtau.App.ViewModels {
         public double HScrollBarMax => Math.Max(0, TickCount - ViewportTicks);
         public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
         public UProject Project => DocManager.Inst.Project;
+        public int EqualTemperament => Project.EqualTemperament;
         [Reactive] public List<MenuItemViewModel> SnapDivs { get; set; }
         [Reactive] public List<MenuItemViewModel> Keys { get; set; }
 
@@ -192,10 +194,11 @@ namespace OpenUtau.App.ViewModels {
                             Command = SetSnapUnitCommand,
                             CommandParameter = div,
                         }));
+                    string[] KeysInOctave = new string[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
                     Keys.Clear();
-                    Keys.AddRange(MusicMath.KeysInOctave
+                    Keys.AddRange(KeysInOctave
                         .Select((key, index) => new MenuItemViewModel {
-                            Header = $"1={key.Item1}",
+                            Header = $"1={key}",
                             Command = SetKeyCommand,
                             CommandParameter = index,
                         }));
@@ -334,7 +337,8 @@ namespace OpenUtau.App.ViewModels {
 
         private void UpdateKey(){
             Key = userKey;
-            KeyText = "1="+MusicMath.KeysInOctave[userKey].Item1;
+            string[] KeysInOctave = new string[]{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+            KeyText = "1="+KeysInOctave[userKey];
         }
 
         public void OnXZoomed(Point position, double delta) {
@@ -408,15 +412,15 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public int PointToTone(Point point) {
-            return ViewConstants.MaxTone - 1 - (int)(point.Y / TrackHeight + TrackOffset);
+            return MaxTone - 1 - (int)(point.Y / TrackHeight + TrackOffset);
         }
         public double PointToToneDouble(Point point) {
-            return ViewConstants.MaxTone - 1 - (point.Y / TrackHeight + TrackOffset) + 0.5;
+            return MaxTone - 1 - (point.Y / TrackHeight + TrackOffset) + 0.5;
         }
         public Point TickToneToPoint(double tick, double tone) {
             return new Point(
                 (tick - TickOffset) * TickWidth,
-                (ViewConstants.MaxTone - 1 - tone - TrackOffset) * TrackHeight);
+                (MaxTone - 1 - tone - TrackOffset) * TrackHeight);
         }
         public Point TickToneToPoint(Vector2 tickTone) {
             return TickToneToPoint(tickTone.X, tickTone.Y);
@@ -431,7 +435,7 @@ namespace OpenUtau.App.ViewModels {
             }
             var project = DocManager.Inst.Project;
             int tone = PointToTone(point);
-            if (tone >= ViewConstants.MaxTone || tone < 0) {
+            if (tone >= MaxTone || tone < 0) {
                 return null;
             }
             int snapUnit = project.resolution * 4 / SnapDiv;
@@ -750,7 +754,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var selectedNotes = Selection.ToList();
-            if (selectedNotes.Any(note => note.tone + deltaNoteNum <= 0 || note.tone + deltaNoteNum >= ViewConstants.MaxTone)) {
+            if (selectedNotes.Any(note => note.tone + deltaNoteNum <= 0 || note.tone + deltaNoteNum >= MaxTone)) {
                 return;
             }
             DocManager.Inst.StartUndoGroup();
@@ -953,7 +957,7 @@ namespace OpenUtau.App.ViewModels {
 
         private void FocusNote(UNote note) {
             TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
-            TrackOffset = Math.Clamp(ViewConstants.MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
+            TrackOffset = Math.Clamp(MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
         }
 
         private void ScrollIntoView(UNote note) {
@@ -961,7 +965,7 @@ namespace OpenUtau.App.ViewModels {
                 AutoScroll(TickToneToPoint(note.position, 0).X);
             }
             var toneMargin = 4;
-            var noteOffset = ViewConstants.MaxTone - note.tone - 1;
+            var noteOffset = MaxTone - note.tone - 1;
             if (noteOffset < TrackOffset + toneMargin) {
                 TrackOffset = Math.Max(noteOffset - toneMargin, 0);
             } else if (noteOffset > TrackOffset + ViewportTracks - toneMargin) {

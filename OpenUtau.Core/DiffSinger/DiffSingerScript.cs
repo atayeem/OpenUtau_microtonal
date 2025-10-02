@@ -21,9 +21,11 @@ namespace OpenUtau.Core.DiffSinger {
         public double frameMs;
         public double[]? gender = null;
         public double[]? velocity = null;
+        public int equalTemperament;
         
         //if v2 is true, export diffsinger script for diffsinger's refactor-v2 branch
         public DiffSingerScript(RenderPhrase phrase, bool v2 = false, bool exportPitch = true) {
+            this.equalTemperament = phrase.equalTemperament;
             const float headMs = DiffSingerUtils.headMs;
             const float tailMs = DiffSingerUtils.tailMs;
             
@@ -97,7 +99,7 @@ namespace OpenUtau.Core.DiffSinger {
             if(exportPitch){
                 f0_seq = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 
                     0, frameMs, totalFrames, headFrames, tailFrames, 
-                    x => MusicMath.ToneToFreq(x * 0.01));
+                    x => MusicMath.ToneToFreq(x * 0.01, equalTemperament));
             }
 
             //velc
@@ -168,7 +170,7 @@ namespace OpenUtau.Core.DiffSinger {
             ph_num = String.Join(" ", script.ph_num);
             note_seq = String.Join(" ", 
                 script.noteSeq
-                .Select(x => x <= 0 ? "rest" : MusicMath.GetToneName(x)));
+                .Select(x => x <= 0 ? "rest" : MusicMath.GetToneName(x, script.equalTemperament)));
             ph_dur = String.Join(" ",script.phDurMs.Select(x => (x/1000).ToString("f4")));
             note_dur = String.Join(" ",script.noteDurMs.Select(x => (x/1000).ToString("f4")));
             note_dur_seq = ph_dur;

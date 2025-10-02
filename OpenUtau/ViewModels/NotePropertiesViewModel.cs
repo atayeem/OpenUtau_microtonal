@@ -118,8 +118,7 @@ namespace OpenUtau.App.ViewModels {
                 IsNoteSelected = true;
                 var note = selectedNotes.First();
 
-                Lyric = note.lyric;
-                Tone = MusicMath.GetToneName(note.tone);
+                Tone = MusicMath.GetToneName(note.tone, DocManager.Inst.Project.EqualTemperament);
                 if (note.pitch.data.Count == 2) {
                     PortamentoLength = note.pitch.data[1].X - note.pitch.data[0].X;
                     PortamentoStart = note.pitch.data[0].X;
@@ -235,7 +234,7 @@ namespace OpenUtau.App.ViewModels {
                     Lyric = note.lyric;
                     this.RaisePropertyChanged(nameof(Lyric));
                 } else if (cmd is MoveNoteCommand) {
-                    Tone = MusicMath.GetToneName(note.tone);
+                    Tone = MusicMath.GetToneName(note.tone, DocManager.Inst.Project.EqualTemperament);
                     this.RaisePropertyChanged(nameof(Tone));
                 } else if (cmd is VibratoCommand) {
                     if (cmd is VibratoLengthCommand || cmd is SetVibratoCommand) {
@@ -314,7 +313,7 @@ namespace OpenUtau.App.ViewModels {
                 } else if (tag == "Tone") {
                     try {
                         if (obj is string s && !string.IsNullOrEmpty(s)) {
-                            int tone = MusicMath.NameToTone(s);
+                            int tone = MusicMath.NameToTone(s, DocManager.Inst.Project.EqualTemperament);
 
                             if ((s.StartsWith("+") || s.StartsWith("-")) && int.TryParse(s, out int i) && i != 0) {
                                 foreach (UNote note in selectedNotes) {
@@ -332,7 +331,7 @@ namespace OpenUtau.App.ViewModels {
                         }
                     } catch {
                         var note = selectedNotes.FirstOrDefault();
-                        Tone = note != null ? MusicMath.GetToneName(note.tone) : string.Empty;
+                        Tone = note != null ? MusicMath.GetToneName(note.tone, DocManager.Inst.Project.EqualTemperament) : string.Empty;
                         this.RaisePropertyChanged(nameof(Tone));
                     }
                 } else if (tag == "PortamentoLength") {

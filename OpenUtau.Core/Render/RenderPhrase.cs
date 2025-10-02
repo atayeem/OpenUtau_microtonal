@@ -160,6 +160,9 @@ namespace OpenUtau.Core.Render {
 
     public class RenderPhrase {
         public readonly USinger singer;
+        public readonly int equalTemperament;
+        public readonly double concertPitch;
+        public readonly int concertPitchNote;
         public readonly TimeAxis timeAxis;
 
         public readonly int position;
@@ -209,6 +212,9 @@ namespace OpenUtau.Core.Render {
             }
 
             singer = track.Singer;
+            equalTemperament = project.EqualTemperament;
+            concertPitch = project.ConcertPitch;
+            concertPitchNote = project.ConcertPitchNote;
             renderer = track.RendererSettings.Renderer;
             wavtool = track.RendererSettings.wavtool;
             timeAxis = project.timeAxis.Clone();

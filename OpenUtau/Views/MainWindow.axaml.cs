@@ -713,7 +713,7 @@ namespace OpenUtau.App.Views {
 
         void OnMenuReportIssue(object sender, RoutedEventArgs args) {
             try {
-                OS.OpenWeb("https://github.com/stakira/OpenUtau/issues");
+                OS.OpenWeb("https://github.com/takunnma5286/OpenUtau_microtonal/issues");
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
@@ -721,7 +721,7 @@ namespace OpenUtau.App.Views {
 
         void OnMenuWiki(object sender, RoutedEventArgs args) {
             try {
-                OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki/Getting-Started");
+                OS.OpenWeb("https://github.com/takunnma5286/OpenUtau_microtonal/wiki/Getting-Started"); // 無い
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }

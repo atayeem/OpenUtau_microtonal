@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -94,6 +94,8 @@ namespace OpenUtau.App.ViewModels {
         public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
         public UProject Project => DocManager.Inst.Project;
         public int EqualTemperament => Project.EqualTemperament;
+        public double ConcertPitch => Project.ConcertPitch;
+        public int ConcertPitchNote => Project.ConcertPitchNote;
         [Reactive] public List<MenuItemViewModel> SnapDivs { get; set; }
         [Reactive] public List<MenuItemViewModel> Keys { get; set; }
 

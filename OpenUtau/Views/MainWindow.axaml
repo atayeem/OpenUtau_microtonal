@@ -59,7 +59,7 @@
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.project}" IsEnabled="{Binding Page}">
             <MenuItem Header="{DynamicResource menu.project.expressions}" Click="OnMenuExpressionss"/>
-            <MenuItem Header="Project Settings..." Click="OnMenuProjectSettings"/>
+            <MenuItem Header="{DynamicResource menu.project.settings}" Click="OnMenuProjectSettings"/>
             <MenuItem Header="{DynamicResource menu.project.remaptimeaxis}" Click="OnMenuRemapTimeaxis"/>
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.tools}">

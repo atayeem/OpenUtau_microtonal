@@ -668,4 +668,13 @@ General
   <system:String x:Key="welcome.recent">Recent</system:String>
   <system:String x:Key="welcome.start">Start</system:String>
   <system:String x:Key="welcome.template">Template</system:String>
+
+  <system:String x:Key="menu.project.settings">Project Settings...</system:String>
+
+  <system:String x:Key="pjsettings.div">Equal Temperament (Divisions per octave)</system:String>
+  <system:String x:Key="pjsettings.pitch">Concert Pitch (Hz)</system:String>
+  <system:String x:Key="pjsettings.note">Concert Pitch Note Number</system:String>
+  <system:String x:Key="pjsettings.cancel">Cancel</system:String>
+  <system:String x:Key="pjsettings.apply">Apply</system:String>
+  <system:String x:Key="pjsettings.caption">Project Settings</system:String>
 </ResourceDictionary>

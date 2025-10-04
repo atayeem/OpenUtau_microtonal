@@ -636,4 +636,13 @@
   <system:String x:Key="welcome.recent">最近使用したファイル</system:String>
   <system:String x:Key="welcome.start">開始</system:String>
   <system:String x:Key="welcome.template">テンプレート</system:String>
+
+  <system:String x:Key="menu.project.settings">プロジェクトの設定...</system:String>
+
+  <system:String x:Key="pjsettings.div">平均律(オクターブあたりの分割数)</system:String>
+  <system:String x:Key="pjsettings.pitch">基準ピッチ (Hz)</system:String>
+  <system:String x:Key="pjsettings.note">基準音階番号</system:String>
+  <system:String x:Key="pjsettings.cancel">キャンセル</system:String>
+  <system:String x:Key="pjsettings.apply">適用</system:String>
+  <system:String x:Key="pjsettings.caption">プロジェクトの設定</system:String>
 </ResourceDictionary>

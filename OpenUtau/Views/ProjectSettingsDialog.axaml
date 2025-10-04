@@ -2,20 +2,20 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:c="using:OpenUtau.Controls"
-        Title="Project Settings"
+        Title="{DynamicResource pjsettings.caption}"
         WindowStartupLocation="CenterScreen"
         SizeToContent="WidthAndHeight"
         x:Class="OpenUtau.App.Views.ProjectSettingsDialog">
   <StackPanel Margin="10" Spacing="10">
-    <TextBlock Text="Equal Temperament (Divisions per octave)"/>
+    <TextBlock Text="{DynamicResource pjsettings.div}"/>
     <c:IntEditor Value="{Binding EqualTemperament}"/>
-    <TextBlock Text="Concert Pitch (Hz)"/>
+    <TextBlock Text="{DynamicResource pjsettings.pitch}"/>
     <c:FloatEditor Value="{Binding ConcertPitch}"/>
-    <TextBlock Text="Concert Pitch Note Number"/>
+    <TextBlock Text="{DynamicResource pjsettings.note}"/>
     <c:IntEditor Value="{Binding ConcertPitchNote}"/>
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-      <Button Content="OK" Click="OkClicked"/>
-      <Button Content="Cancel" Click="CancelClicked"/>
+      <Button Content="{DynamicResource pjsettings.cancel}" Click="CancelClicked"/>
+      <Button Content="{DynamicResource pjsettings.apply}" Click="OkClicked"/>
     </StackPanel>
   </StackPanel>
 </Window>

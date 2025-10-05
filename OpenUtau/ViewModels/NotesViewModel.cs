@@ -35,7 +35,14 @@ namespace OpenUtau.App.ViewModels {
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
         [Reactive] public Rect Bounds { get; set; }
         public int TickCount => Part?.Duration ?? 480 * 4;
-        public int MaxTone => 11 * EqualTemperament;
+        public int MaxTone {
+            get {
+                if (EqualTemperament == 0) {
+                    return 128;
+                }
+                return 11 * EqualTemperament;
+            }
+        }
         public int TrackCount => MaxTone;
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.NoteHeightMin;

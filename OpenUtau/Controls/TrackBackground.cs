@@ -125,6 +125,9 @@ namespace OpenUtau.App.Controls {
         }
 
         int mod(int a, int b){
+            if (b == 0) {
+                return a;
+            }
             return (a % b + b) % b;
         }
 
@@ -190,6 +193,9 @@ namespace OpenUtau.App.Controls {
                 return false;
             }
             int ET = EqualTemperament;
+            if (ET == 0) {
+                return false;
+            }
 
             if (ET == 12) {
                 return new int[] { 1, 3, 6, 8, 10 }.Contains(mod(tone, 12));

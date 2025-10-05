@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
+using System.Threading.Tasks;
 
 namespace OpenUtau.App.Views {
     public partial class ProjectSettingsDialog : Window {
@@ -15,6 +16,13 @@ namespace OpenUtau.App.Views {
 
         void CancelClicked(object sender, RoutedEventArgs e) {
             Close();
+        }
+
+        async void LoadTunClicked(object sender, RoutedEventArgs e) {
+            var path = await FilePicker.OpenFile(this, "pjsettings.loadtun", FilePicker.TUN);
+            if (path != null) {
+                (DataContext as ProjectSettingsViewModel)?.LoadTun(path);
+            }
         }
     }
 }

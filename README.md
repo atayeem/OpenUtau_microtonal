@@ -1,3 +1,5 @@
+[日本語版はこちら](./README_ja.md)
+
 # OpenUtau_microtonal
 
 ** This project is under active development! So expect instabilities. **
@@ -35,7 +37,7 @@ and click on Project Settings. You should see a menu like this:
 
 <img width="348" height="229" alt="image" src="https://github.com/user-attachments/assets/ac19d722-5ef5-430f-8c75-3ef5e1e76083" />
 
-You probably don't need to change the last two options. Just set which EDO you want. Now when you open the piano roll, you'll find a bunch of notes with no names at the bottom. Place notes down there. That's it!
+Set the desired number of divisions in the 'Equal Temperament (Divisions per octave)' field. (You typically do not need to change the two options below.)
 
 <img width="493" height="423" alt="image" src="https://github.com/user-attachments/assets/25fcf692-802f-4723-8366-27745850146a" />
 

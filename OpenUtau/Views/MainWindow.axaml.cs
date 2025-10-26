@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -25,6 +26,8 @@ using ReactiveUI;
 using Serilog;
 using SharpCompress;
 using Point = Avalonia.Point;
+using Melanchall.DryWetMidi.Core;
+using Melanchall.DryWetMidi.Interaction;
 
 namespace OpenUtau.App.Views {
     public partial class MainWindow : Window, ICmdSubscriber {
@@ -374,6 +377,164 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuImportMicrotonalMidi(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            if (project == null) {
+                return;
+            }
+
+            var file = await FilePicker.OpenFileAboutProject(
+                this, "menu.file.importmidi", FilePicker.MIDI);
+            if (file == null) {
+                return;
+            }
+
+            try {
+                // 1. Lyric Encoding Detection
+                Encoding lyricEncoding = Encoding.UTF8;
+                var encodingDetector = new OpenUtau.Core.Format.EncodingDetector();
+                encodingDetector.ReadFile(file);
+                var encodingResult = encodingDetector.Detect();
+                if (encodingResult != null) {
+                    lyricEncoding = encodingResult;
+                }
+
+                // 2. Read MIDI file
+                var ReadingSettings = OpenUtau.Core.Format.MidiWriter.BaseReadingSettings();
+                ReadingSettings.TextEncoding = lyricEncoding;
+                var midiFile = MidiFile.Read(file, ReadingSettings);
+                if (midiFile.TimeDivision is not TicksPerQuarterNoteTimeDivision timeDivision) {
+                    throw new FileFormatException("MIDI file has no time division.");
+                }
+                var PPQ = timeDivision.TicksPerQuarterNote;
+
+                var trackChunks = midiFile.GetTrackChunks();
+                var channelInfos = new List<MidiChannelInfo>();
+                var channels = new HashSet<int>();
+
+                foreach (var trackChunk in trackChunks) {
+                    foreach (var note in trackChunk.GetNotes()) {
+                        channels.Add(note.Channel);
+                    }
+                }
+
+                foreach (var channel in channels.OrderBy(c => c)) {
+                    channelInfos.Add(new MidiChannelInfo {
+                        ChannelNumber = channel + 1,
+                        Offset = 0,
+                    });
+                }
+
+                var vm = new MicrotonalMidiImportViewModel(channelInfos);
+                var dialog = new MicrotonalMidiImportDialog {
+                    DataContext = vm,
+                };
+
+                var result = await dialog.ShowDialog<bool>(this);
+
+                if (result) {
+                    var offsets = vm.Channels.ToDictionary(ci => ci.ChannelNumber - 1, ci => ci.Offset);
+
+                    // 7n+5m temperament logic
+                    int ET = project.EqualTemperament;
+                    int n = -1, m = -1;
+                    if (ET > 12) {
+                        for (int i = 1; i * 7 < ET; ++i) {
+                            if ((ET - 7 * i) % 5 == 0) {
+                                m = (ET - 7 * i) / 5;
+                                if (m > 0) {
+                                    n = i;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    List<UVoicePart> parts = new List<UVoicePart>();
+                    string defaultLyric = NotePresets.Default.DefaultLyric;
+
+                    foreach (TrackChunk trackChunk in midiFile.GetTrackChunks()) {
+                        var midiNoteList = trackChunk.GetNotes().ToList();
+                        if (midiNoteList.Count > 0) {
+                            var part = new UVoicePart();
+                            using (var objectsManager = new TimedObjectsManager<TimedEvent>(trackChunk.Events)) {
+                                var events = objectsManager.Objects;
+                                Dictionary<long, string> lyrics = events.Where(e => e.Event is LyricEvent)
+                                    .GroupBy(e => e.Time)
+                                    .ToDictionary(g => g.Key, g => ((LyricEvent)g.First().Event).Text);
+                                var trackName = events.Where(e => e.Event is SequenceTrackNameEvent)
+                                    .Select(e => ((SequenceTrackNameEvent)e.Event).Text).FirstOrDefault();
+                                part.name = trackName ?? "New Part";
+
+                                foreach (Melanchall.DryWetMidi.Interaction.Note midiNote in midiNoteList) {
+                                    int tone;
+                                    if (n > 0 && m > 0) {
+                                        // 7n+5m mapping
+                                        var map_12_to_T = new int[] { 0, n, n + m, 2 * n + m, 2 * n + 2 * m, 3 * n + 2 * m, 4 * n + 2 * m, 4 * n + 3 * m, 5 * n + 3 * m, 5 * n + 4 * m, 6 * n + 4 * m, 6 * n + 5 * m };
+                                        int C0 = 12;
+                                        int octave = (midiNote.NoteNumber - C0) / 12;
+                                        int note_in_12_tet_octave = (midiNote.NoteNumber - C0) % 12;
+                                        int note_in_T_tet_octave = map_12_to_T[note_in_12_tet_octave];
+                                        tone = C0 + octave * ET + note_in_T_tet_octave;
+                                    } else {
+                                        // Fallback to frequency-based conversion
+                                        double freq = MusicMath.ToneToFreq(midiNote.NoteNumber, 12);
+                                        double baseTone = MusicMath.FreqToTone(freq, project.EqualTemperament, project.ConcertPitch, project.ConcertPitchNote);
+                                        tone = (int)Math.Round(baseTone, MidpointRounding.AwayFromZero);
+                                    }
+
+                                    if (offsets.TryGetValue(midiNote.Channel, out int offset)) {
+                                        tone += offset;
+                                    }
+
+                                    var note = project.CreateNote(
+                                        tone,
+                                        (int)(midiNote.Time * project.resolution / PPQ),
+                                        (int)(midiNote.Length * project.resolution / PPQ)
+                                    );
+                                    lyrics.TryGetValue(midiNote.Time, out string? lyric);
+                                    lyric = lyric ?? defaultLyric;
+
+                                    if (lyric == "-") {
+                                        lyric = "+";
+                                    }
+                                    note.lyric = lyric;
+                                    if (NotePresets.Default.AutoVibratoToggle && note.duration >= NotePresets.Default.AutoVibratoNoteDuration) {
+                                        note.vibrato.length = NotePresets.Default.DefaultVibrato.VibratoLength;
+                                    }
+                                    part.notes.Add(note);
+                                }
+                            }
+                            parts.Add(part);
+                        }
+                    }
+
+                    if (parts != null && parts.Count > 0) {
+                        var commands = new List<UCommand>();
+                        foreach (var part in parts) {
+                            var track = new UTrack(project) {
+                                TrackNo = project.tracks.Count,
+                                TrackName = part.name,
+                            };
+                            part.trackNo = track.TrackNo;
+                            commands.Add(new AddTrackCommand(project, track));
+                            commands.Add(new AddPartCommand(project, part));
+                        }
+                        if (commands.Count > 0) {
+                            DocManager.Inst.StartUndoGroup();
+                            foreach (var command in commands) {
+                                DocManager.Inst.ExecuteCmd(command);
+                            }
+                            DocManager.Inst.EndUndoGroup();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to import microtonal midi");
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import microtonal midi", "Failed to import microtonal midi", e));
+            }
+        }
+
         async void OnMenuExportMixdown(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
             var file = await FilePicker.SaveFileAboutProject(
@@ -488,7 +649,7 @@ namespace OpenUtau.App.Views {
             var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportmidi", FilePicker.MIDI);
             if (!string.IsNullOrEmpty(file)) {
-                MidiWriter.Save(file, project);
+                OpenUtau.Core.Format.MidiWriter.Save(file, project);
             }
         }
 

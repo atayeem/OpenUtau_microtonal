@@ -35,8 +35,8 @@
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
             <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
-            <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi">
-            </MenuItem>
+            <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi"/>
+            <MenuItem Header="{DynamicResource menu.file.importmicrotonalmidi}" Click="OnMenuImportMicrotonalMidi"/>
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.exportaudio}">
               <MenuItem Header="{DynamicResource menu.file.exportwav}" Click="OnMenuExportWav"/>

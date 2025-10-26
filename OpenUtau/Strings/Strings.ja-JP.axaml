@@ -65,6 +65,12 @@
   <system:String x:Key="dialogs.voicecolorremapping">Voice colorの再マッピング</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">このトラック内のすべての音符に適用されます：</system:String>
 
+  <system:String x:Key="menu.file.importmicrotonalmidi">微分音MIDIをインポート...</system:String>
+  <system:String x:Key="dialog.importmicrotonalmidi.title">微分音MIDIのインポート</system:String>
+  <system:String x:Key="dialog.importmicrotonalmidi.message">各MIDIチャンネルの音程オフセットを設定します。</system:String>
+  <system:String x:Key="dialog.importmicrotonalmidi.channel">チャンネル</system:String>
+  <system:String x:Key="dialog.importmicrotonalmidi.offset">音程オフセット（ステップ）</system:String>
+
   <system:String x:Key="errors.caption">エラー</system:String>
   <system:String x:Key="errors.details">エラーの詳細</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder">ボコーダー "{0}" のロードに失敗しました。未インストールの場合、以下のURLからダウンロードしてください：{1}</system:String>

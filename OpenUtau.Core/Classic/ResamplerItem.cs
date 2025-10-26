@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -127,6 +127,9 @@ namespace OpenUtau.Classic {
                     writer.Write(resampler.ToString());
                     writer.Write(inputFile);
                     writer.Write(tone);
+                    writer.Write(equalTemperament);
+                    writer.Write(concertPitch);
+                    writer.Write(concertPitchNote);
 
                     foreach (var flag in flags) {
                         writer.Write(flag.Item1);

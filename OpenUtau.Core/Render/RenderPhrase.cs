@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -469,6 +469,9 @@ namespace OpenUtau.Core.Render {
                     writer.Write(renderer?.ToString() ?? "");
                     writer.Write(wavtool ?? "");
                     writer.Write(timeAxis.Timestamp);
+                    writer.Write(equalTemperament);
+                    writer.Write(concertPitch);
+                    writer.Write(concertPitchNote);
                     foreach (var phone in phones) {
                         writer.Write(phone.hash);
                     }

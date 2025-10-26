@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -55,9 +55,6 @@ namespace OpenUtau.App {
         };
         public static FilePickerFileType OUDEP { get; } = new("OpenUtau dependency") {
             Patterns = new[] { "*.oudep" },
-        };
-        public static FilePickerFileType TUN { get; } = new("TUN") {
-            Patterns = new[] { "*.tun" },
         };
         public static FilePickerFileType UnixExecutable { get; } = new("Executable") {
             MimeTypes = new[] { "application/x-executable" },

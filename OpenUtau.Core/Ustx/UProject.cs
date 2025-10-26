@@ -73,7 +73,6 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public int EndTick => parts.Count == 0 ? 0 : parts.Max(p => p.End);
 
         [YamlIgnore] public readonly TimeAxis timeAxis = new TimeAxis();
-        [YamlIgnore] public double[]? ToneToFreqMap { get; private set; }
 
         public UProject() {
             timeSignatures = new List<UTimeSignature> { new UTimeSignature(0, 4, 4) };
@@ -81,22 +80,6 @@ namespace OpenUtau.Core.Ustx {
             tracks = new List<UTrack>() { new UTrack("Track1") };
             parts = new List<UPart>();
             timeAxis.BuildSegments(this);
-            UpdateToneToFreqMap();
-        }
-
-        public void UpdateToneToFreqMap() {
-            if (EqualTemperament == 0) {
-                return;
-            }
-            ToneToFreqMap = new double[128];
-            double a = Math.Pow(2, 1.0 / EqualTemperament);
-            for (var i = 0; i < 128; i++) {
-                ToneToFreqMap[i] = ConcertPitch * Math.Pow(a, i - ConcertPitchNote);
-            }
-        }
-
-        public void SetToneToFreqMap(double[]? map) {
-            ToneToFreqMap = map;
         }
 
         public void RegisterExpression(UExpressionDescriptor descriptor) {

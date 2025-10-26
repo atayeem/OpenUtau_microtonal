@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public static class MusicMath {
@@ -199,33 +198,13 @@ namespace OpenUtau.Core {
         }
 
         public static double ToneToFreq(int tone, int equalTemperament = 12, double concertPitch = 440.0, int concertPitchNote = 69) {
-            var project = DocManager.Inst.Project;
-            if (project != null && project.EqualTemperament == equalTemperament && project.ConcertPitch == concertPitch && project.ConcertPitchNote == concertPitchNote && project.ToneToFreqMap != null && tone >= 0 && tone < project.ToneToFreqMap.Length) {
-                return project.ToneToFreqMap[tone];
-            }
             double a = Math.Pow(2, 1.0 / equalTemperament);
             return concertPitch * Math.Pow(a, tone - concertPitchNote);
         }
 
         public static double ToneToFreq(double tone, int equalTemperament = 12, double concertPitch = 440.0, int concertPitchNote = 69) {
-            var project = DocManager.Inst.Project;
-            var toneToFreqMap = project?.ToneToFreqMap;
-            if (project != null && project.EqualTemperament == equalTemperament && project.ConcertPitch == concertPitch && project.ConcertPitchNote == concertPitchNote && toneToFreqMap != null && tone >= 0 && tone < toneToFreqMap.Length - 1) {
-                int toneFloor = (int)Math.Floor(tone);
-                double fraction = tone - toneFloor;
-                if (fraction < 1e-6) {
-                    return toneToFreqMap[toneFloor];
-                }
-                double f1 = toneToFreqMap[toneFloor];
-                double f2 = toneToFreqMap[toneFloor + 1];
-                if (f1 <= 0 || f2 <= 0) {
-                    double a = Math.Pow(2, 1.0 / equalTemperament);
-                    return concertPitch * Math.Pow(a, tone - concertPitchNote);
-                }
-                return f1 * Math.Pow(f2 / f1, fraction);
-            }
-            double a_ = Math.Pow(2, 1.0 / equalTemperament);
-            return concertPitch * Math.Pow(a_, tone - concertPitchNote);
+            double a = Math.Pow(2, 1.0 / equalTemperament);
+            return concertPitch * Math.Pow(a, tone - concertPitchNote);
         }
 
         public static double FreqToTone(double freq, int equalTemperament = 12, double concertPitch = 440.0, int concertPitchNote = 69) {

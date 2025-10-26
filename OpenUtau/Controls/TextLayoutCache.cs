@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
@@ -13,9 +13,6 @@ namespace OpenUtau.App.Controls {
         }
 
         public static TextLayout Get(string text, IBrush brush, double fontSize, bool bold = false) {
-            if (fontSize <= 0) {
-                fontSize = 1;
-            }
             var key = Tuple.Create(text, brush, fontSize, bold);
             if (!cache.TryGetValue(key, out var textLayout)) {
                 var fontWeight = bold ? FontWeight.Bold : FontWeight.Normal;

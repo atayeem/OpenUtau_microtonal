@@ -13,7 +13,6 @@
     <c:FloatEditor Value="{Binding ConcertPitch}"/>
     <TextBlock Text="{DynamicResource pjsettings.note}"/>
     <c:IntEditor Value="{Binding ConcertPitchNote}"/>
-    <Button Content="{DynamicResource pjsettings.loadtun}" Click="LoadTunClicked"/>
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
       <Button Content="{DynamicResource pjsettings.cancel}" Click="CancelClicked"/>
       <Button Content="{DynamicResource pjsettings.apply}" Click="OkClicked"/>
